@@ -22,7 +22,6 @@ class AuthServiceProvider extends ServiceProvider
     {
 
 
-
     }
 
     /**
@@ -36,7 +35,6 @@ class AuthServiceProvider extends ServiceProvider
        $this->app['auth']->provider('employeeAuth', function($app) {
            return new EmployeeUserProvider('emp_mst');
         });
-
         $this->registerPolicies();
 
         //

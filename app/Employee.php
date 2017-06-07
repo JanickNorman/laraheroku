@@ -14,5 +14,6 @@ class Employee extends Authenticatable
 	use Notifiable;
     //
     protected $table = "emp_mst";
+    protected $fillable = ['employee_name'];
 
 }
