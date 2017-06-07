@@ -33,7 +33,7 @@ Route::group(array('prefix' => 'api/v1', 'middleware' => []), function () {
 });
 
 
-Route::get('*', function () {
+Route::get('/', function () {
     return "unauthorized";
 });
 

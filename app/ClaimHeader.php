@@ -27,7 +27,12 @@ class ClaimHeader extends Model
 	{
 		$this->attributes['creation_date'] = Carbon::createFromFormat('d-m-Y', $value);
 	}
-	
+
+	public function getCreationDateAttribute($value)
+	{
+		return $value->format('d-m-Y');
+	}
+
     function details() {
     	return $this->hasMany('App\ClaimDetail', 'trx_header_id', 'trx_id');
     }

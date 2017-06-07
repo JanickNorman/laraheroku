@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\EmployeeUserProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -16,6 +18,13 @@ class AuthServiceProvider extends ServiceProvider
         'App\Model' => 'App\Policies\ModelPolicy',
     ];
 
+    public function register()
+    {
+
+
+
+    }
+
     /**
      * Register any authentication / authorization services.
      *
@@ -23,6 +32,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+       $this->app['auth']->provider('employeeAuth', function($app) {
+           return new EmployeeUserProvider('emp_mst');
+        });
+
         $this->registerPolicies();
 
         //
