@@ -23,7 +23,7 @@ class CreateClaimHeaderTable extends Migration
             $table->string('employee_number', 30);
             $table->integer('toll_from')->nullable();
             $table->integer('toll_to')->nullable();
-            $table->integer('milleage')->nullable();
+            $table->integer('mileage')->nullable();
             $table->integer('parking')->nullable();
             $table->integer('meal')->nullable();
             $table->string('created_by', 30);

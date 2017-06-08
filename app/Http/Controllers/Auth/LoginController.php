@@ -43,7 +43,7 @@ class LoginController extends Controller
 
     public function login(Request $request) {
 
-        $employee = Employee::where('employee_number', $request->get('employee_number'))->first();
+        $employee = Employee::where('cell_no', $request->get('cell_no'))->first();
 
         if (!$employee) {
             return response()->json(['message' => 'no employee found', 'status' => 404], 404);
@@ -57,7 +57,7 @@ class LoginController extends Controller
                 return response()->json(['errors' => 'error creating a token'], 500);
         }
 
-        return response()->json(['status' => 'success', 'token_type' => 'bearer' ,'access_token' => $token, 'user' => $employee], 200);
+        return response()->json(['status' => 'success', 'token_type' => 'bearer' ,'access_token' => $token, "expires_in" => config('jwt.ttl') * 60, 'user' => $employee], 200);
 
     }
 }

@@ -1,6 +1,5 @@
 <?php
-use App\Customer;
-use App\Project;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,17 +17,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // API Group Routes
 Route::group(array('prefix' => 'api/v1', 'middleware' => []), function () {
-	Route::get('lists.json', function() {
-		$projects = Project::all();
-		$customers = Customer::all();
-
-		$lists = [
-			'projects' => $projects,
-			'customers' => $customers
-		];
-
-		return $lists;
-	})->middleware('auth:api');
 	Route::post('claims/create_many.json', 'ClaimController@bulkCreate');
 	Route::post('claims/headers.json', 'ClaimController@postHeader');
 	Route::post('claims/headers/{trx_id}.json', 'ClaimController@postDetails');

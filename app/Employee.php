@@ -9,13 +9,17 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Employee extends Model implements Authenticatable, JWTSubject
 {
-	use Notifiable;
-    //
+    use Notifiable;
+
     protected $table = "emp_mst";
 
     protected $fillable = ['employee_number', 'employee_name', 'cell_no', 'creation_date'];
 
     public $timestamps = false;
+
+    public function claimHeaders() {
+        return $this->hasMany('App\ClaimHeader', 'employee_number', 'employee_number');
+    }
 
     /**
      * Get the name of the unique identifier for the user.

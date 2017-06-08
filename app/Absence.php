@@ -7,5 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Absence extends Model
 {
     //
-    protected $table = 'absence_trx'; 
+    protected $table = 'absence_trx';
+
+    public $timestamps = false;
+
+    public $fillable = ['date_from', 'date_to', 'project_number', 'employee_number', 'activity_status', 'created_by', 'creation_date', 'batch_id'];
 }

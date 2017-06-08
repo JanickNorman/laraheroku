@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    //
     protected $table = 'customer_mst';
+
     protected $appends = ['total_distance'];
+
     protected $visible = ['customer_code', 'customer_name', 'total_distance'];
+
+    public $timestamps = false;
 
     public function getTotalDistanceAttribute($value)
     {

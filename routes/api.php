@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Http\Request;
+use \Auth as Auth;
+use App\Customer;
+use App\Project;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,42 +16,55 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix' => 'v1'], function() {
+	Route::get('/lists', function() {
+		$projects = Project::all();
+		$customers = Customer::all();
+
+		$lists = [
+			'projects' => $projects,
+			'customers' => $customers
+		];
+
+		return response()->json($lists, 200);
+	});
+	Route::post('/login', 'Auth\LoginController@login')->middleware('guest');
+	Route::group(['middleware' => 'auth:api'], function () {
+		Route::post('claims/create_many', 'ClaimController@bulkCreate');
+		Route::post('claims/header', 'ClaimController@postHeader');
+		Route::post('claims/header/{trx_id}/details', 'ClaimController@postDetails');
+		Route::post('absence', 'AbsenceController@createAbsence');
+
+		Route::get('/user', function (Request $request) {
+			return Auth::user();
+			//return $request->user();
+		});
+		Route::get('/test', function () {
+			return 'authenticated';
+		});
+	});
+
 });
 
-Route::post('login', 'Auth\LoginController@login');
 
-Route::group([
-    'prefix' => 'restricted',
-    'middleware' => 'auth:api',
-], function () {
-
-    // Authentication Routes...
-    Route::get('logout', 'Auth\LoginController@logout');
-
-    Route::get('/test', function () {
-        return 'authenticated';
-    });
-});
 
 
 /**
  * GET /lists.json
  *
  * {
- * 	projects: [
- * 		{project_number: 1, project_name: "BCA Finance Akses", total_jarak: 35},
- * 		{project_number: 2, project_name: "FIF Group Bravo", total_jarak: 35},
- * 		...
- * 		{project_number: 150, project_name: "Tiki Charlie", total_jarak: 35}
- * 	],
- * 	customers: [
- * 		{customer_code: 1, customer_name: "BCA", total_jarak: 45},
- *   	{customer_code: 2, customer_name: "FIF Group", total_jarak: 45},
- *   	...
- *   	{customer_code: 100, customer_name: "Tiki", total_jarak: 45},
- * 	]
+ *    projects: [
+ *       {project_number: 1, project_name: "BCA Finance Akses", total_jarak: 35},
+ *       {project_number: 2, project_name: "FIF Group Bravo", total_jarak: 35},
+ *       ...
+ *       {project_number: 150, project_name: "Tiki Charlie", total_jarak: 35}
+ *    ],
+ *    customers: [
+ *       {customer_code: 1, customer_name: "BCA", total_jarak: 45},
+ *    {customer_code: 2, customer_name: "FIF Group", total_jarak: 45},
+ *    ...
+ *    {customer_code: 100, customer_name: "Tiki", total_jarak: 45},
+ *    ]
  *
  * }
  */
@@ -57,30 +73,30 @@ Route::group([
  * POST /claims_many.json
  *
  * {
- * 		[
- * 		toll_total_distance: 40,
- * 		client_code: '333eee',
- * 		activity_code: "sales",
- * 		mileage: "",
- * 		parking: "",
- * 		meal: "",
- * 		created_by: "Norman",
- * 		details: [
- * 			{taxi_total_distance: 20, taxi_voucher: "123abc", taxi_time: "20 min"},
- * 			{taxi_total_distance: 30, taxi_voucher: "456def", taxi_time: "30 min"}
- * 		 ],
- * 		[
- * 		toll_total_distance: 30,
- * 		client_code: '444aaa',
- * 		activity_code: "project",
- * 		mileage: "",
- * 		parking: "",
- * 		meal: "",
- * 		created_by: "Norman",
- * 		details: [
- * 			{taxi_total_distance: 40, taxi_voucher: "666aaa", taxi_time: "40 min"},
- * 		 	]
- * 		]
+ *       [
+ *       toll_total_distance: 40,
+ *       client_code: '333eee',
+ *       activity_code: "sales",
+ *       mileage: "",
+ *       parking: "",
+ *       meal: "",
+ *       created_by: "Norman",
+ *       details: [
+ *          {taxi_total_distance: 20, taxi_voucher: "123abc", taxi_time: "20 min"},
+ *          {taxi_total_distance: 30, taxi_voucher: "456def", taxi_time: "30 min"}
+ *        ],
+ *       [
+ *       toll_total_distance: 30,
+ *       client_code: '444aaa',
+ *       activity_code: "project",
+ *       mileage: "",
+ *       parking: "",
+ *       meal: "",
+ *       created_by: "Norman",
+ *       details: [
+ *          {taxi_total_distance: 40, taxi_voucher: "666aaa", taxi_time: "40 min"},
+ *          ]
+ *       ]
  *
  * }
  */
@@ -89,11 +105,11 @@ Route::group([
  * POST /claims/headers.json
  *
  * {
- * 		trx_id: 321,
- * 		employee_number: 2,
- * 		toll_total_distance: 40,
- * 		activity_code: "BCA FINANCE",
- *   	taxi_total_distance: 40
+ *       trx_id: 321,
+ *       employee_number: 2,
+ *       toll_total_distance: 40,
+ *       activity_code: "BCA FINANCE",
+ *    taxi_total_distance: 40
  * }
  */
 
@@ -101,10 +117,10 @@ Route::group([
  * POST /claims/headers/{trx_id}.json
  *
  * {
- * 		details: [
- * 			{taxi_total_distance: 40, taxi_voucher: "123abc"},
- * 			{taxi_total_distance: 40, taxi_voucher: "456def"}
- * 		 ]
+ *       details: [
+ *          {taxi_total_distance: 40, taxi_voucher: "123abc"},
+ *          {taxi_total_distance: 40, taxi_voucher: "456def"}
+ *        ]
  *
  * }
  */
@@ -112,22 +128,22 @@ Route::group([
 /**
  * POST /absence_many.json
  *
- * 	{
- * 		absences: [
- *	 		{
- *	 			project_number: 2,
- *	 			status: 1,
- *		 		date_from: 27-01-2017,
- *	 			date_to: 01-02-2017,
- *	  		},
- *	  		{
- *	  	 		project_number: 3,
- *	  		  	status: 2,
- *	  	 	 	date_from: 27-02-2017,
- *	  	 	 	date_to: 01-03-2017
- *	    	}
- * 	    ]
- * 	}
+ *    {
+ *       absences: [
+ *       {
+ *          project_number: 2,
+ *          status: 1,
+ *          date_from: 27-01-2017,
+ *          date_to: 01-02-2017,
+ *       },
+ *       {
+ *          project_number: 3,
+ *          status: 2,
+ *          date_from: 27-02-2017,
+ *          date_to: 01-03-2017
+ *       }
+ *        ]
+ *    }
  *
  *
  *

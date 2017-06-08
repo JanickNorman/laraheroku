@@ -6,87 +6,90 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\ClaimHeader;
 use App\ClaimDetail;
+use Auth;
 
 class ClaimController extends Controller
 {
-    //
+	//
 	function __construct() {
 
 	}
-    
-    function bulkCreate(Request $request, ClaimHeader $header, ClaimDetail $detail) {
-    	$headers = $request->input('claims_headers');
 
-    	if (!$headers || !is_array($headers)) {
-    		return response()->json(['error' => "invalid request body"])->setStatusCode(400, Response::$statusTexts[Response::HTTP_OK]);
-    	}
+	function bulkCreate(Request $request, ClaimHeader $header, ClaimDetail $detail) {
+		$headers = $request->input('claim_headers');
 
-    	$result = [];
-    	foreach ($headers as $key => $header) {
-    		$claim_header = ClaimHeader::create($header);
+		if (!$headers || !is_array($headers)) {
+			return response()->json(['error' => "invalid request body"])->setStatusCode(400, Response::$statusTexts[Response::HTTP_OK]);
+		}
 
-    		if (!$claim_header) {
-    			$result[$key] = ["error" => "error creating claim header"];
-    		}	
+		$result = [];
+		foreach ($headers as $key => $header) {
 
-    		$result[$key] = $claim_header->toArray();
+			//$claim_header = ClaimHeader::create($header);
+			$claim_header = Auth::user()->claimHeader()->create($header);
 
-    		if (count($header['claims_details']) > 0) {
+			if (!$claim_header) {
+				$result[$key] = ["error" => "error creating claim header"];
+			}
 
-    			$details = $claim_header->details()->createMany($header['claims_details']);
+			$result[$key] = $claim_header->toArray();
 
-    			if (!$details) {
-    				$result[$key]['details'] = ["error" => "error creating details"]; 
-    			}	
-    			$result[$key]['details'] = $details;		
-    		}
+			if (count($header['claim_details']) > 0) {
 
-    	}
-    	$response = ['claims_headers' => $result];
+				$details = $claim_header->details()->createMany($header['claim_details']);
 
-    	return response()->json($response)->setStatusCode(Response::HTTP_OK);
-    }
+				if (!$details) {
+					$result[$key]['details'] = ["error" => "error creating details"];
+				}
+				$result[$key]['details'] = $details;
+			}
 
-    function postHeader(Request $request) {
-   		$data = $request->input('claim_header');
+		}
+		$response = ['claim_headers' => $result];
 
-        if (!$data || !is_array($data)) {
-            return response()->json(['error' => "invalid request body"])->setStatusCode(400);
-        } 
+		return response()->json($response)->setStatusCode(Response::HTTP_OK);
+	}
 
-        $claim_header = ClaimHeader::create($data);
+	function postHeader(Request $request) {
+	   $data = $request->input('claim_header');
 
-        if (!$claim_header) {
-            return ["error" => "error creating claim header"];
-        }
+	   if (!$data || !is_array($data)) {
+		return response()->json(['error' => "invalid request body"])->setStatusCode(400);
+	}
 
-        $result = $claim_header->toArray();
-        if (count($data['claims_details']) > 0) {
-                $details = $claim_header->details()->createMany($data['claims_details']);
-                if (!$details) {
-                    $result[$key]['details'] = ["error" => "error creating details"]; 
-                }   
-                $result['claim_details'] = $details;        
-        }
+	$claim_header = ClaimHeader::create($data);
 
-        $response = ['claims_headers' => $result];
-    }
+	if (!$claim_header) {
+		return ["error" => "error creating claim header"];
+	}
 
-    function postDetails(Request $request, $trx_id) {
-    	$data = $request->input('claim_details');
+	$result = $claim_header->toArray();
+	if (count($data['claims_details']) > 0) {
+		$details = $claim_header->details()->createMany($data['claims_details']);
+		if (!$details) {
+			$result[$key]['details'] = ["error" => "error creating details"];
+		}
+		$result['claim_details'] = $details;
+	}
 
-        $claim_header = ClaimHeader::where('trx_id', $trx_id)->first();
+	$response = ['claims_headers' => $result];
+}
 
-        if (!$claim_header) {
-            return response()->json(['error' => "No claim header is found"])->setStatusCode(400);
-        }
+function postDetails(Request $request, $trx_id) {
+   $data = $request->input('claim_details');
 
-        $details = $claim_header->details()->createMany($data);
+   $claim_header = ClaimHeader::where('trx_id', $trx_id)->first();
 
-        if (!$details) {
-            return response()->json(['error' => 'Unable to create details'])->setStatusCode(400);
-        }
+   if (!$claim_header) {
+	return response()->json(['error' => "No claim header is found"])->setStatusCode(400);
+}
 
-            
-    }
+$details = $claim_header->details()->createMany($data);
+
+if (!$details) {
+	return response()->json(['error' => 'Unable to create details'])->setStatusCode(400);
+}
+
+
+}
 }
