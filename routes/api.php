@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Customer;
-use App\Project;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,18 +35,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  *   	...
  *   	{customer_code: 100, customer_name: "Tiki", total_jarak: 45},
  * 	]
- * 
+ *
  * }
  */
 
 /**
  * POST /claims_many.json
  *
- * {	
+ * {
  * 		[
  * 		toll_total_distance: 40,
  * 		client_code: '333eee',
- * 		activity_code: "sales",	
+ * 		activity_code: "sales",
  * 		mileage: "",
  * 		parking: "",
  * 		meal: "",
@@ -60,7 +58,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * 		[
  * 		toll_total_distance: 30,
  * 		client_code: '444aaa',
- * 		activity_code: "project",	
+ * 		activity_code: "project",
  * 		mileage: "",
  * 		parking: "",
  * 		meal: "",
@@ -69,18 +67,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * 			{taxi_total_distance: 40, taxi_voucher: "666aaa", taxi_time: "40 min"},
  * 		 	]
  * 		]
- * 
+ *
  * }
  */
 
 /**
  * POST /claims/headers.json
  *
- * {	
+ * {
  * 		trx_id: 321,
  * 		employee_number: 2,
  * 		toll_total_distance: 40,
- * 		activity_code: "BCA FINANCE",	
+ * 		activity_code: "BCA FINANCE",
  *   	taxi_total_distance: 40
  * }
  */
@@ -88,12 +86,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 /**
  * POST /claims/headers/{trx_id}.json
  *
- * {	
+ * {
  * 		details: [
  * 			{taxi_total_distance: 40, taxi_voucher: "123abc"},
  * 			{taxi_total_distance: 40, taxi_voucher: "456def"}
  * 		 ]
- * 
+ *
  * }
  */
 
@@ -118,5 +116,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * 	}
  *
  *
- * 
+ *
  */

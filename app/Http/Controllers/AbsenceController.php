@@ -11,8 +11,12 @@ class AbsenceController extends Controller
     function __construct() {
 
     }
-    
+
     function bulkUpdate() {
-    	
+
+    }
+
+    function leave() {
+
     }
 }

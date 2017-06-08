@@ -11,6 +11,9 @@ use App\Project;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 
 // API Group Routes
@@ -25,15 +28,15 @@ Route::group(array('prefix' => 'api/v1', 'middleware' => []), function () {
 		];
 
 		return $lists;
-	});
+	})->middleware('auth:api');
 	Route::post('claims/create_many.json', 'ClaimController@bulkCreate');
 	Route::post('claims/headers.json', 'ClaimController@postHeader');
 	Route::post('claims/headers/{trx_id}.json', 'ClaimController@postDetails');
-	Route::post('absence.json', 'AbsenceController@bulkCreate');
+	Route::post('absence.json', 'AbsenceController@create');
 });
 
 
-Route::get('*', function () {
+Route::get('/', function () {
     return "unauthorized";
 });
 
