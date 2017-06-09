@@ -11,5 +11,7 @@ class Absence extends Model
 
     public $timestamps = false;
 
-    public $fillable = ['date_from', 'date_to', 'project_number', 'employee_number', 'activity_status', 'created_by', 'creation_date', 'batch_id'];
+    public $fillable = ['abs_trx_id', 'date_from', 'date_to', 'project_number', 'employee_number', 'activity_status', 'created_by', 'creation_date', 'batch_id'];
+
+    protected $primaryKey = 'abs_trx_id';
 }

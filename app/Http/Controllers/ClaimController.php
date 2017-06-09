@@ -26,28 +26,28 @@ class ClaimController extends Controller
 		foreach ($headers as $key => $header) {
 
 			//$claim_header = ClaimHeader::create($header);
-			$claim_header = Auth::user()->claimHeader()->create($header);
+			$claim_header = Auth::user()->claimHeaders()->create($header);
 
 			if (!$claim_header) {
 				$result[$key] = ["error" => "error creating claim header"];
 			}
 
 			$result[$key] = $claim_header->toArray();
-
 			if (count($header['claim_details']) > 0) {
 
+				//dd($header['claim_details']);
 				$details = $claim_header->details()->createMany($header['claim_details']);
-
 				if (!$details) {
 					$result[$key]['details'] = ["error" => "error creating details"];
 				}
+
 				$result[$key]['details'] = $details;
 			}
 
 		}
 		$response = ['claim_headers' => $result];
 
-		return response()->json($response)->setStatusCode(Response::HTTP_OK);
+		return response()->json($response, 200);
 	}
 
 	function postHeader(Request $request) {

@@ -13,6 +13,8 @@ class ClaimDetail extends Model
 
 	public $timestamps = false;
 
+	protected $primaryKey = 'trx_detail_id';
+
 	function header() {
 		return $this->belongsTo('App\ClaimHeader', 'trx_id', 'trx_header_id');
 	}

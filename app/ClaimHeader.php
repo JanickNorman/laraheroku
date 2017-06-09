@@ -13,6 +13,8 @@ class ClaimHeader extends Model
 
 	public $timestamps = false;
 
+	protected $primaryKey = 'trx_id';
+
 	public function setClaimDateAttribute($value)
 	{
 		$this->attributes['claim_date'] = Carbon::createFromFormat('d-m-Y', $value);

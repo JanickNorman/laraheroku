@@ -17,6 +17,8 @@ class Employee extends Model implements Authenticatable, JWTSubject
 
     public $timestamps = false;
 
+    protected $primaryKey = 'employee_number';
+
     public function claimHeaders() {
         return $this->hasMany('App\ClaimHeader', 'employee_number', 'employee_number');
     }

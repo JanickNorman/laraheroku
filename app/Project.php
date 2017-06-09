@@ -14,6 +14,8 @@ class Project extends Model
 
     public $timestamps = false;
 
+    protected $primaryKey = 'project_number';
+
     public function getTotalDistanceAttribute($value)
     {
         return $this->attributes['standard_km_from'] + $this->attributes['standard_km_to'];
