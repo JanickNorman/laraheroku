@@ -37,11 +37,13 @@ class ClaimController extends Controller
 
 				//dd($header['claim_details']);
 				$details = $claim_header->details()->createMany($header['claim_details']);
+				//dd($details);
+				//dd($claim_header->details->toArray());
+
 				if (!$details) {
 					$result[$key]['details'] = ["error" => "error creating details"];
 				}
-
-				$result[$key]['details'] = $details;
+				$result[$key]['claim_details'] = $details;
 			}
 
 		}
@@ -64,8 +66,10 @@ class ClaimController extends Controller
 	}
 
 	$result = $claim_header->toArray();
-	if (count($data['claims_details']) > 0) {
-		$details = $claim_header->details()->createMany($data['claims_details']);
+
+	if (count($data['claim_details']) > 0) {
+
+		$details = $claim_header->details()->createMany($data['claim_details']);
 		if (!$details) {
 			$result[$key]['details'] = ["error" => "error creating details"];
 		}
