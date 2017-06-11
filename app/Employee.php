@@ -23,6 +23,10 @@ class Employee extends Model implements Authenticatable, JWTSubject
         return $this->hasMany('App\ClaimHeader', 'employee_number', 'employee_number');
     }
 
+    public function absences() {
+        return $this->hasMany('App\Absence', 'employee_number', 'employee_number');
+    }
+
     /**
      * Get the name of the unique identifier for the user.
      *

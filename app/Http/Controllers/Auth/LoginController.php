@@ -42,8 +42,8 @@ class LoginController extends Controller
     }
 
     public function login(Request $request) {
-
-        $employee = Employee::where('cell_no', $request->get('cell_no'))->first();
+        $cell_no = $request->input('cell_no');
+        $employee = Employee::where('cell_no', $cell_no)->first();
 
         if (!$employee) {
             return response()->json(['message' => 'no employee found', 'status' => 404], 404);

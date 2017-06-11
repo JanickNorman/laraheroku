@@ -16,84 +16,80 @@ class ClaimController extends Controller
 	}
 
 	function bulkCreate(Request $request, ClaimHeader $header, ClaimDetail $detail) {
-		$headers = $request->input('claim_headers');
+		$data = $request->input('claim_headers');
 
-		if (!$headers || !is_array($headers)) {
-			return response()->json(['error' => "invalid request body"])->setStatusCode(400, Response::$statusTexts[Response::HTTP_OK]);
+		if (!$data || !is_array($data)) {
+			return response()->json(['errors' => "invalid_request_body"], 400);
 		}
 
 		$result = [];
-		foreach ($headers as $key => $header) {
+		foreach ($data as $key => $header) {
 
 			//$claim_header = ClaimHeader::create($header);
 			$claim_header = Auth::user()->claimHeaders()->create($header);
-
 			if (!$claim_header) {
-				$result[$key] = ["error" => "error creating claim header"];
+				$result[$key] = ["errors" => "error_creating_claim_header"];
+				continue;
 			}
 
 			$result[$key] = $claim_header->toArray();
 			if (count($header['claim_details']) > 0) {
-
 				//dd($header['claim_details']);
 				$details = $claim_header->details()->createMany($header['claim_details']);
 				//dd($details);
-				//dd($claim_header->details->toArray());
 
 				if (!$details) {
-					$result[$key]['details'] = ["error" => "error creating details"];
+					$result[$key]['errors'] = ["errors" => "error_creating_details"];
 				}
 				$result[$key]['claim_details'] = $details;
 			}
 
 		}
-		$response = ['claim_headers' => $result];
 
+		$response = ['status' => 'success', 'claim_headers' => $result];
 		return response()->json($response, 200);
 	}
 
 	function postHeader(Request $request) {
-	   $data = $request->input('claim_header');
+		$data = $request->input('claim_header');
 
-	   if (!$data || !is_array($data)) {
-		return response()->json(['error' => "invalid request body"])->setStatusCode(400);
-	}
-
-	$claim_header = ClaimHeader::create($data);
-
-	if (!$claim_header) {
-		return ["error" => "error creating claim header"];
-	}
-
-	$result = $claim_header->toArray();
-
-	if (count($data['claim_details']) > 0) {
-
-		$details = $claim_header->details()->createMany($data['claim_details']);
-		if (!$details) {
-			$result[$key]['details'] = ["error" => "error creating details"];
+		if (!$data || !is_array($data)) {
+			return response()->json(['status' => 'error', 'errors' => "invalid request body"], 400);
 		}
-		$result['claim_details'] = $details;
+
+		$claim_header = Auth::user()->claimHeaders()->create($data);
+		if (!$claim_header) {
+			return response()->json(["errors" => "error creating claim header"], 400);
+		}
+
+		$result = $claim_header->toArray();
+
+		if (count($data['claim_details']) > 0) {
+			$details = $claim_header->details()->createMany($data['claim_details']);
+			if (!$details) {
+				$result['errors'] = ["error" => "error creating details"];
+			}
+			$result['claim_details'] = $details;
+		}
+
+		$response = ['status' => 'success', 'claims_headers' => $result];
+		return response()->json($response, 200);
 	}
 
-	$response = ['claims_headers' => $result];
-}
+	function postDetails(Request $request, $trx_id) {
+		$data = $request->input('claim_details');
 
-function postDetails(Request $request, $trx_id) {
-   $data = $request->input('claim_details');
+		$claim_header = ClaimHeader::where('employee_number', Auth::user()->employee_number)->where('trx_id', $trx_id)->first();
+		if (!$claim_header) {
+			return response()->json([ "status" => 'error', 'errors' => "unauthorize"], 401);
+		}
 
-   $claim_header = ClaimHeader::where('trx_id', $trx_id)->first();
+		$details = $claim_header->details()->createMany($data);
+		if (!$details) {
+			return response()->json(["status" => 'error', 'errors' => 'unable_creating_details'], 400);
+		}
 
-   if (!$claim_header) {
-	return response()->json(['error' => "No claim header is found"])->setStatusCode(400);
-}
-
-$details = $claim_header->details()->createMany($data);
-
-if (!$details) {
-	return response()->json(['error' => 'Unable to create details'])->setStatusCode(400);
-}
-
-
-}
+		$response = ['status' => 'success', 'claim_details' => $details];
+		return response()->json($response, 200);
+	}
 }

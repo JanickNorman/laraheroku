@@ -14,12 +14,12 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Illuminate\Auth\Access\AuthorizationException::class,
-        \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-        \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class,
+    \Illuminate\Auth\AuthenticationException::class,
+    \Illuminate\Auth\Access\AuthorizationException::class,
+    \Symfony\Component\HttpKernel\Exception\HttpException::class,
+    \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+    \Illuminate\Session\TokenMismatchException::class,
+    \Illuminate\Validation\ValidationException::class,
     ];
 
     /**
@@ -48,17 +48,18 @@ class Handler extends ExceptionHandler
         if ($request->wantsJson() || $request->isJson()) {
             // Define the response
             $response = [
-                'errors' => 'Sorry, something went wrong.'
+            'status' => "error",
+            'message' => 'Sorry, something went wrong.'
             ];
 
             // If the app is in debug mode
-            if (config('app.debug'))
-            {
+            // if (config('app.debug'))
+            // {
                 // Add the exception class name, message and stack trace to response
                 $response['exception'] = get_class($exception); // Reflection might be better here
                 $response['message'] = $exception->getMessage();
                 //$response['trace'] = $exception->getTrace();
-            }
+            // }
             // Default response of 400
             $status = 400;
 
@@ -68,7 +69,9 @@ class Handler extends ExceptionHandler
                 // Grab the HTTP status code from the Exception
                 $status = $exception->getStatusCode();
             }
-    
+
+
+
             // Return a JSON response with the response array and status code
             return response()->json($response, $status);
         }
@@ -91,4 +94,5 @@ class Handler extends ExceptionHandler
 
         return redirect()->guest(route('login'));
     }
+
 }
